@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<K7 version="0.010000">
+  <domain id="Preferences-CoverArtSources">
+    <key id="Source0" type="integer">0</key>
+    <key id="Source1" type="integer">1</key>
+    <key id="Source2" type="integer">2</key>
+    <key id="Source3" type="integer">3</key>
+    <key id="SourceActive0" type="boolean">TRUE</key>
+    <key id="SourceActive1" type="boolean">TRUE</key>
+    <key id="SourceActive2" type="boolean">TRUE</key>
+    <key id="SourceActive3" type="boolean">TRUE</key>
+  </domain>
+  <domain id="hotkeys">
+    <key id="key-1" type="integer">0</key>
+    <key id="key-1-mask" type="integer">0</key>
+    <key id="key-2" type="integer">0</key>
+    <key id="key-2-mask" type="integer">0</key>
+    <key id="key-3" type="integer">0</key>
+    <key id="key-3-mask" type="integer">0</key>
+    <key id="key-4" type="integer">0</key>
+    <key id="key-4-mask" type="integer">0</key>
+    <key id="key-5" type="integer">0</key>
+    <key id="key-5-mask" type="integer">0</key>
+    <key id="system" type="integer">1</key>
+  </domain>
+  <domain id="lastfm">
+    <key id="password" type="string">optical</key>
+    <key id="username" type="string">mderezynski</key>
+  </domain>
+  <domain id="library">
+    <key id="rescan-at-startup" type="boolean">FALSE</key>
+  </domain>
+  <domain id="main-window">
+    <key id="height" type="integer">600</key>
+    <key id="paned1" type="integer">0</key>
+    <key id="paned2" type="integer">0</key>
+    <key id="pos_x" type="integer">0</key>
+    <key id="pos_y" type="integer">0</key>
+    <key id="width" type="integer">800</key>
+  </domain>
+  <domain id="mpd">
+    <key id="hostname" type="string">localhost</key>
+    <key id="port" type="integer">6600</key>
+  </domain>
+  <domain id="mpx">
+    <key id="display-notifications" type="boolean">TRUE</key>
+    <key id="follow-current-track" type="boolean">FALSE</key>
+    <key id="preferences-notebook-page" type="integer">0</key>
+    <key id="theme" type="string">popularfruit</key>
+    <key id="volume" type="integer">50</key>
+    <key id="window-h" type="integer">547</key>
+    <key id="window-plugins-h" type="integer">447</key>
+    <key id="window-plugins-w" type="integer">679</key>
+    <key id="window-plugins-x" type="integer">133</key>
+    <key id="window-plugins-y" type="integer">80</key>
+    <key id="window-prefs-h" type="integer">431</key>
+    <key id="window-prefs-w" type="integer">700</key>
+    <key id="window-prefs-x" type="integer">286</key>
+    <key id="window-prefs-y" type="integer">126</key>
+    <key id="window-w" type="integer">977</key>
+    <key id="window-x" type="integer">168</key>
+    <key id="window-y" type="integer">25</key>
+  </domain>
+  <domain id="plugins">
+    <key id="Last.fm Scrobbler" type="boolean">TRUE</key>
+    <key id="Multimedia Keys" type="boolean">TRUE</key>
+    <key id="PreferencesModule COVERART" type="boolean">FALSE</key>
+    <key id="PreferencesModule MPD" type="boolean">FALSE</key>
+  </domain>
+  <domain id="pyplugs"/>
+</K7>

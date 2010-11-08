@@ -1,0 +1,27 @@
+INCLUDE_DIRECTORIES(
+  ${PROJECT_BINARY_DIR}
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_SOURCE_DIR}/include
+  ${Boost_INCLUDE_DIR}
+  ${GLADEMM_INCLUDE_DIRS}
+  ${GLIBMM_INCLUDE_DIRS}
+  ${GTKMM_INCLUDE_DIRS}
+  ${SIGX_INCLUDE_DIRS}
+)
+
+SET(cppmod_mpdprefs_SOURCES
+  prefs-mpd.cc
+  prefs-mpd.hh
+)
+
+ADD_LIBRARY(cppmod-mpdprefs MODULE ${cppmod_mpdprefs_SOURCES})
+
+TARGET_LINK_LIBRARIES(cppmod-mpdprefs
+  ${GLADEMM_LIBRARIES}
+  ${GLIBMM_LIBRARIES}
+  ${GTKMM_LIBRARIES}
+  ${SIGX_LIBRARIES}
+  mconfig
+)
+
+INSTALL(TARGETS cppmod-mpdprefs LIBRARY DESTINATION ${PLUGIN_DIR}/cppmod)

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glade-interface>
+  <!-- interface-requires gtk+ 2.6 -->
+  <!-- interface-naming-policy toplevel-contextual -->
+  <widget class="GtkWindow" id="preferences">
+    <property name="title" translatable="yes">Preferences - Rimokon</property>
+    <property name="type_hint">dialog</property>
+    <signal name="delete_event" handler="gtk_widget_hide" object="dialog_preferences"/>
+    <child>
+      <widget class="GtkAlignment" id="preferences-alignment-outer">
+        <property name="visible">True</property>
+        <property name="top_padding">12</property>
+        <property name="bottom_padding">12</property>
+        <property name="left_padding">12</property>
+        <property name="right_padding">12</property>
+        <child>
+          <widget class="GtkVBox" id="preferences-vbox-main">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkHBox" id="preferences-hbox-main">
+                <property name="visible">True</property>
+                <property name="spacing">12</property>
+                <child>
+                  <widget class="GtkNotebook" id="notebook">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="show_border">False</property>
+                  </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkAlignment" id="alignment290">
+                <property name="visible">True</property>
+                <property name="top_padding">8</property>
+                <child>
+                  <widget class="GtkHBox" id="hbox9">
+                    <property name="visible">True</property>
+                    <property name="spacing">36</property>
+                    <child>
+                      <widget class="GtkLabel" id="l_version">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="use_markup">True</property>
+                      </widget>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkHButtonBox" id="prefswin_button_box">
+                        <property name="visible">True</property>
+                        <property name="spacing">10</property>
+                        <property name="layout_style">end</property>
+                        <child>
+                          <widget class="GtkButton" id="close">
+                            <property name="label">gtk-close</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="can_default">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="use_stock">True</property>
+                          </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+        </child>
+      </widget>
+    </child>
+  </widget>
+</glade-interface>

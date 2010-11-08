@@ -1,0 +1,6 @@
+SET(MPX_DESKTOPDIR ${MPX_DATADIR}/applications)
+
+INSTALL(
+  FILES rimokon.desktop
+  DESTINATION ${MPX_DESKTOPDIR}
+)
