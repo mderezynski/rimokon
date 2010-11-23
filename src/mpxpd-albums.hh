@@ -18,6 +18,7 @@ namespace MPXPD
                 Gtk::TreeModelColumn<std::string>                   Name ;
                 Gtk::TreeModelColumn<int64_t>                       Id ;
                 Gtk::TreeModelColumn<std::string>                   MPXId ;
+                Gtk::TreeModelColumn<std::string>                   Search ;
 
                 Columns()
                 {
@@ -25,6 +26,7 @@ namespace MPXPD
                     add( Name ) ;
                     add( Id ) ;
                     add( MPXId ) ;
+                    add( Search ) ;
                 }
             } ;
 
@@ -59,7 +61,8 @@ namespace MPXPD
             end_add()
             {
                 set_model( store ) ;
-                set_search_column( 1 ) ;
+                set_enable_search() ;
+                set_search_column( columns.Search ) ;
                 show() ;
             }
 
@@ -77,17 +80,15 @@ namespace MPXPD
                 col->add_attribute( *cell, "markup", columns.Name ) ;
                 append_column(*col) ;
 
-                // append_column( "Album", columns.Name ) ;
-
                 get_column_cell_renderer(0)->set_padding( 4, 4 ) ;
 
                 set_model( store ) ;
-                set_search_column( columns.Name ) ;
+                set_enable_search() ;
+                set_search_column( columns.Search ) ;
 
                 get_selection()->signal_changed().connect(
                       sigc::mem_fun(*this,&AlbumsView::on_album_changed)
                 ) ;
-//                get_selection()->set_mode( Gtk::SELECTION_BROWSE ) ;
 
                 set_rules_hint() ;
             }
@@ -128,6 +129,7 @@ namespace MPXPD
 
             (*iter)[columns.Image] = image ;
             (*iter)[columns.Name] = (boost::format("<b>%s</b>\n<small>%s</small>") % Glib::Markup::escape_text(name) % date).str() ;
+            (*iter)[columns.Search] = name ; 
             (*iter)[columns.Id] = id ;
             (*iter)[columns.MPXId] = mpxid ;
         }

@@ -1248,8 +1248,7 @@ namespace Tracks
                     , int                               ypos
                     , int                               rowheight
                     , int                               column
-                    , const ThemeColor&                 color_fg
-                    , const ThemeColor&                 color_bg
+                    , const ThemeColor&                 color
                 )
                 {
                     using boost::get;
@@ -1263,15 +1262,6 @@ namespace Tracks
 
                     cairo->clip() ;
 
-                    cairo->set_source_rgba(
-                          color_fg.r
-                        , color_fg.g
-                        , color_fg.b
-                        , color_fg.a
-                    ) ;
-
-                    cairo->paint() ;
-
                     cairo->move_to(
                           xpos + 5
                         , ypos + 6
@@ -1280,10 +1270,10 @@ namespace Tracks
                     cairo->set_operator(Cairo::OPERATOR_OVER);
 
                     cairo->set_source_rgba(
-                          color_bg.r
-                        , color_bg.g
-                        , color_bg.b
-                        , color_bg.a 
+                          color.r
+                        , color.g
+                        , color.b
+                        , color.a 
                     ) ; 
 
                     Glib::RefPtr<Pango::Layout> layout = widget.create_pango_layout(""); 
@@ -1441,9 +1431,10 @@ namespace Tracks
 
                 boost::optional<gint64>             m_id_currently_playing ;
                 boost::optional<gint64>             m_hover_track ;
+                boost::optional<gint64>             m_terminal_track ;
 
-                Glib::RefPtr<Gdk::Pixbuf>           m_pixbuf_PLAY ;
-                Glib::RefPtr<Gdk::Pixbuf>           m_pixbuf_ADD ;
+                Glib::RefPtr<Gdk::Pixbuf>           m_pb_play_l ;
+                Glib::RefPtr<Gdk::Pixbuf>           m_pb_hover_l ;
 
                 std::set<int>                       m_collapsed ;
                 std::set<int>                       m_fixed ;
@@ -1824,16 +1815,10 @@ namespace Tracks
                         else
                         if( x >= 16 )
                         {
-                            const Row_t& r_ = m_model->row( row ) ;
-                            MPX::Track_sp track = get<4>( r_ ) ;
-                            m_SIGNAL_track_activated.emit( track, false, row ) ;
-                            m_hover_track.reset() ;
-                            //queue_draw() ;
-
+                            /* reserved for future use for clicking on the hover 'play' icon */
                         }
                         else
                         {
-/*
                             gint64 id = get<3>( m_model->row( row )) ;
 
                             if( m_terminal_track && id == m_terminal_track.get() )
@@ -1846,7 +1831,6 @@ namespace Tracks
                             }
                 
                             queue_draw() ;
-*/
                         }
                     }
 
@@ -2040,8 +2024,6 @@ namespace Tracks
                     const ThemeColor& c_text        = theme->get_color( THEME_COLOR_TEXT ) ;
                     const ThemeColor& c_text_sel    = theme->get_color( THEME_COLOR_TEXT_SELECTED ) ;
                     const ThemeColor& c_rules_hint  = theme->get_color( THEME_COLOR_BASE_ALTERNATE ) ;
-                    const ThemeColor& c_color_base  = theme->get_color( THEME_COLOR_BASE ) ;
-                    const ThemeColor& c_color_back  = theme->get_color( THEME_COLOR_BACKGROUND ) ;
 
                     Cairo::RefPtr<Cairo::Context> cairo = get_window()->create_cairo_context(); 
 
@@ -2081,7 +2063,6 @@ namespace Tracks
                                   , m_row_start
                                   , col
                                   , c_text
-                                  , c_color_base
                                 ) ;
 
                                 xpos += (*i)->get_width() ; 
@@ -2150,9 +2131,9 @@ namespace Tracks
                                 {
                                         GdkRectangle r ;
 
-                                        r.x         = 36 + inner_pad ; 
+                                        r.x         = 32 + inner_pad ; 
                                         r.y         = inner_pad + (row - get_upper_row()) * m_row_height + m_row_start ;
-                                        r.width     = a.get_width() - 2*inner_pad - 36 ; 
+                                        r.width     = a.get_width() - 2*inner_pad - 32 ; 
                                         r.height    = m_row_height  - 2*inner_pad ;
 
                                         theme->draw_selection_rectangle(
@@ -2316,7 +2297,7 @@ namespace Tracks
                         {
                             Gdk::Cairo::set_source_pixbuf(
                                   cairo
-                                , m_pixbuf_PLAY
+                                , m_pb_play_l
                                 , icon_x[ICON_PLAY]
                                 , icon_y 
                             ) ;
@@ -2337,7 +2318,7 @@ namespace Tracks
                             {
                                 Gdk::Cairo::set_source_pixbuf(
                                       cairo
-                                    , m_pixbuf_ADD
+                                    , m_pb_hover_l
                                     , icon_x[ICON_PLAY]
                                     , icon_y 
                                 ) ;
@@ -2349,6 +2330,27 @@ namespace Tracks
                                 ) ;
                                 cairo->fill () ;
                             }
+
+/*
+                            if( !( skip & SKIP_SKIP_TERMINAL))
+                            {
+                                Gdk::Cairo::set_source_pixbuf(
+                                      cairo
+                                    , m_pb_terminal
+                                    , icon_x[ICON_TERMINAL]
+                                    , icon_y 
+                                ) ;
+                                cairo->rectangle(
+                                      icon_x[ICON_TERMINAL] 
+                                    , icon_y 
+                                    , icon_lateral
+                                    , icon_lateral
+                                ) ;
+                                cairo->clip () ;
+                                cairo->paint_with_alpha( 0.5 ) ;
+                                cairo->reset_clip() ;
+                            }
+*/
                         }
 
                         ypos += m_row_height ;
@@ -2445,7 +2447,6 @@ namespace Tracks
 
             public:
 
-/*
                 inline void
                 set_terminal_id(
                     gint64    id
@@ -2454,9 +2455,7 @@ namespace Tracks
                     m_terminal_track = id ; 
                     queue_draw() ;
                 }
-*/
 
-/*
                 inline boost::optional<gint64>
                 get_terminal_id(
                 )
@@ -2471,7 +2470,6 @@ namespace Tracks
                     m_terminal_track.reset() ;
                     queue_draw() ;
                 }
-*/
     
                 inline std::size_t
                 get_page_size(
@@ -2934,8 +2932,8 @@ namespace Tracks
                     modify_bg( Gtk::STATE_NORMAL, cgdk ) ;
                     modify_base( Gtk::STATE_NORMAL, cgdk ) ;
 
-                    m_pixbuf_PLAY  = Gdk::Pixbuf::create_from_file( Glib::build_filename( DATA_DIR, "images" G_DIR_SEPARATOR_S "row-play.png" )) ;
-                    m_pixbuf_ADD = Gdk::Pixbuf::create_from_file( Glib::build_filename( DATA_DIR, "images" G_DIR_SEPARATOR_S "add.png" )) ;
+                    m_pb_play_l  = Gdk::Pixbuf::create_from_file( Glib::build_filename( DATA_DIR, "images" G_DIR_SEPARATOR_S "row-play.png" )) ;
+                    m_pb_hover_l = Gdk::Pixbuf::create_from_file( Glib::build_filename( DATA_DIR, "images" G_DIR_SEPARATOR_S "row-hover.png" )) ;
 
                     set_flags(Gtk::CAN_FOCUS);
                     add_events(Gdk::EventMask(GDK_KEY_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK ));

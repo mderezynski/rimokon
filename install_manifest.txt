@@ -55,6 +55,7 @@
 /usr/share/rimokon/icons/hicolor/24x24/stock/icon-musiclibrary.png
 /usr/share/rimokon/icons/hicolor/24x24/stock/icon-plugins.png
 /usr/share/rimokon/icons/hicolor/24x24/stock/icon-preferences.png
+/usr/share/rimokon/images/add.png
 /usr/share/rimokon/images/animated-throbber.gif
 /usr/share/rimokon/images/disc-multiple.png
 /usr/share/rimokon/images/disc.png

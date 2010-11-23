@@ -610,8 +610,6 @@ namespace Playlist
                 Glib::RefPtr<Gtk::Action>           m_Action_Remove_Selected ;
                 Glib::RefPtr<Gtk::Action>           m_Action_Clear_Playlist ;
 
-                int                                 m_last_clicked_row ;
-
                 void
                 initialize_metrics ()
                 {
@@ -989,7 +987,6 @@ namespace Playlist
                 bool
                 on_button_release_event (GdkEventButton * event)
                 {
-                    m_SIGNAL_row_moved.emit( m_last_clicked_row, m_clicked_row ) ;
                     m_clicked = false ;
                     return true ;
                 }
@@ -1046,7 +1043,7 @@ namespace Playlist
                                 if( m_Model_I.in( row )) 
                                 {
                                     m_model->swap( row, m_clicked_row ) ;
-                                    m_last_clicked_row = row ;
+                                    m_SIGNAL_row_moved.emit( row, m_clicked_row ) ;
                                     m_clicked_row = row ;
                                     select_row( row ) ;
                                 }
