@@ -535,6 +535,18 @@ namespace Tracks
                         , row
                     ) ;
                 }
+
+                virtual void
+                regen_iterative_idle()
+                {
+                    regen_mapping_iterative() ;
+                }
+
+                virtual void
+                regen_idle()
+                {
+                    regen_mapping() ;
+                }
  
                 virtual void
                 set_filter(
@@ -555,17 +567,20 @@ namespace Tracks
 
                     bool aqe_diff = m_constraints_aqe != aqe ;
 
+
                     if( !aqe_diff && ( text.substr( 0, text.size() - 1 ) == m_current_filter ) )
                     {
                         m_current_filter = text ;
-                        regen_mapping_iterative() ;
+                        Glib::signal_idle().connect_once( 
+                              sigc::mem_fun( *this, &MPX::View::Tracks::DataModelFilter::regen_iterative_idle )) ; 
                     }
                     else
                     {
                         m_current_filter = text ;
-                        Util::window_set_busy( * dynamic_cast<Gtk::Window*>(m_widget->get_toplevel()) ) ;
-                        regen_mapping() ;
-                        Util::window_set_idle( * dynamic_cast<Gtk::Window*>(m_widget->get_toplevel()) ) ;
+                        //Util::window_set_busy( * dynamic_cast<Gtk::Window*>(m_widget->get_toplevel()) ) ;
+                        //Util::window_set_idle( * dynamic_cast<Gtk::Window*>(m_widget->get_toplevel()) ) ;
+                        Glib::signal_idle().connect_once( 
+                              sigc::mem_fun( *this, &MPX::View::Tracks::DataModelFilter::regen_idle )) ; 
                     }
                 }
 

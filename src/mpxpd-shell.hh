@@ -63,6 +63,7 @@ namespace MPXPD
             Gtk::ScrolledWindow * sw_titles ;
             Gtk::ScrolledWindow * sw_tracklist ;
             Gtk::ScrolledWindow * sw_playlist ;
+            Gtk::Button         * bt_clear_playlist ;
 
             ArtistsView         * artists_view ; 
             AlbumsView          * albums_view ;

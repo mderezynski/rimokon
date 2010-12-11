@@ -289,6 +289,11 @@ namespace MPXPD
 
                 i_cover = dynamic_cast<Gtk::Image*>(xml->get_widget("image-cover")) ;
                 i_cover_large = dynamic_cast<Gtk::Image*>(xml->get_widget("image-cover-large")) ;
+
+                xml->get_widget( "button-clear", bt_clear_playlist ) ;
+                bt_clear_playlist->signal_clicked().connect(
+                      sigc::mem_fun( *this, &Shell::on_playlist_clear
+                )) ;
     
                 m_actions = Gtk::ActionGroup::create() ;
         
@@ -972,15 +977,19 @@ namespace MPXPD
                     }
 
                     while (gtk_events_pending()) gtk_main_iteration() ;
-                }
 
-                Gtk::TreePath path ("0") ;
+                }
 
                 albums_view->end_add() ;
                 albums_view->autosize() ;
-                albums_view->scroll_to_row( path ) ;
+                albums_view->scroll_to_row( Gtk::TreePath("0") ) ;
 
                 throbber_nb->set_current_page(0);
+
+                if( albums_view->get_size() == 1 )
+                {
+                    albums_view->select_first() ;
+                }
 
                 artists_view->set_sensitive( true ) ;
             }

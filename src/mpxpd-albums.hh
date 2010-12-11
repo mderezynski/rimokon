@@ -16,17 +16,17 @@ namespace MPXPD
             {
                 Gtk::TreeModelColumn<Glib::RefPtr<Gdk::Pixbuf> >    Image ;
                 Gtk::TreeModelColumn<std::string>                   Name ;
+                Gtk::TreeModelColumn<std::string>                   BareName ;
                 Gtk::TreeModelColumn<int64_t>                       Id ;
                 Gtk::TreeModelColumn<std::string>                   MPXId ;
-                Gtk::TreeModelColumn<std::string>                   Search ;
 
                 Columns()
                 {
                     add( Image ) ;
                     add( Name ) ;
+                    add( BareName ) ; 
                     add( Id ) ;
                     add( MPXId ) ;
-                    add( Search ) ;
                 }
             } ;
 
@@ -61,8 +61,8 @@ namespace MPXPD
             end_add()
             {
                 set_model( store ) ;
+                set_search_column( 2 ) ;
                 set_enable_search() ;
-                set_search_column( columns.Search ) ;
                 show() ;
             }
 
@@ -84,7 +84,7 @@ namespace MPXPD
 
                 set_model( store ) ;
                 set_enable_search() ;
-                set_search_column( columns.Search ) ;
+                set_search_column( 2 ) ;
 
                 get_selection()->signal_changed().connect(
                       sigc::mem_fun(*this,&AlbumsView::on_album_changed)
@@ -129,7 +129,7 @@ namespace MPXPD
 
             (*iter)[columns.Image] = image ;
             (*iter)[columns.Name] = (boost::format("<b>%s</b>\n<small>%s</small>") % Glib::Markup::escape_text(name) % date).str() ;
-            (*iter)[columns.Search] = name ; 
+            (*iter)[columns.BareName] = name ; 
             (*iter)[columns.Id] = id ;
             (*iter)[columns.MPXId] = mpxid ;
         }
@@ -138,6 +138,18 @@ namespace MPXPD
         clear()
         {
             store->clear() ;
+        }
+
+        std::size_t
+        get_size()
+        {
+            return store->children().size() ;
+        }
+
+        void
+        select_first()
+        {
+            get_selection()->select( Gtk::TreePath("0")) ;
         }
 
         void

@@ -1467,6 +1467,27 @@ namespace Playlist
                         , 1
                     ) ;
 
+                    if( m_prop_vadj )
+                    {
+
+                        if( !m_model->size() )
+                        {
+                            m_prop_vadj.get_value()->set_value( 0. ) ; 
+                        }
+
+                        if( (m_prop_vadj.get_value()->get_value() - m_prop_vadj.get_value()->get_page_size()) > m_prop_vadj.get_value()->get_upper())
+                        {
+                            m_prop_vadj.get_value()->set_value( m_prop_vadj.get_value()->get_value() + 1 ) ;
+                        }
+
+                        const Gtk::Allocation& a = get_allocation();
+
+                        if( m_model->size() > (a.get_height()/double(m_row_height)) ) 
+                        {
+                            m_prop_vadj.get_value()->set_value( m_prop_vadj.get_value()->get_upper() - m_prop_vadj.get_value()->get_page_size() ) ;
+                        }
+                    }
+
                     m_selection.reset() ;
 
                     update_actions() ;
