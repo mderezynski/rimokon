@@ -71,7 +71,7 @@ public:
     /** Indicate that the current track has stopped playing. The current
      * track will be submitted to Last.fm
      */
-    void finishedPlaying();
+    void finishedPlaying( int );
     /** Indicate that playback of the current track has been (un)paused
      * \param paused true if track is being paused, false if being unpaused
      */

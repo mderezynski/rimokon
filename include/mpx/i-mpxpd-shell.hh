@@ -10,6 +10,20 @@ namespace MPXPD
     {
         public:
 
+            typedef sigc::signal<void, bool> SigPaused ;
+
+        protected:
+
+            SigPaused   m_CPP_SIG_paused ;
+
+        public:
+
+            SigPaused&
+            signal_paused()
+            {
+                return m_CPP_SIG_paused ;
+            }
+
             virtual const MPXPD::Metadata&
             get_metadata() = 0 ;
 
@@ -27,6 +41,9 @@ namespace MPXPD
 
             virtual Gtk::Widget*
             get_widget() = 0 ;
+
+            virtual int
+            get_elapsed() = 0 ;
     } ;
 }
 

@@ -155,11 +155,8 @@ namespace MPX
               , gpointer
           ) ;
 
-/*
           void
-          on_play_status_changed(
-          ) ;
-*/
+          on_paused_changed( bool ) ;
 
           void
           on_entry_changed(

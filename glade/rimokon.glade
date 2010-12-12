@@ -30,7 +30,6 @@
             <child>
               <widget class="GtkNotebook" id="notebook">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
                 <property name="border_width">4</property>
                 <property name="tab_pos">left</property>
                 <property name="show_border">False</property>
@@ -44,6 +43,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="invisible_char">●</property>
+                        <property name="primary_icon_stock">gtk-clear</property>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -69,13 +69,13 @@
                   </widget>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="label1">
+                  <widget class="GtkLabel" id="search-label">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">_Search</property>
                     <property name="use_underline">True</property>
                     <property name="mnemonic_widget">search-entry</property>
-                    <property name="single_line_mode">True</property>
                     <property name="angle">90</property>
+                    <property name="can_focus">False</property>
                   </widget>
                   <packing>
                     <property name="tab_fill">False</property>
@@ -229,8 +229,10 @@
                 <child>
                   <widget class="GtkLabel" id="label5">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Browse</property>
+                    <property name="label" translatable="yes">B_rowse</property>
+                    <property name="use_underline">True</property>
                     <property name="angle">90</property>
+                    <property name="can_focus">False</property>
                   </widget>
                   <packing>
                     <property name="position">1</property>

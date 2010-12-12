@@ -1083,6 +1083,16 @@ namespace Playlist
                         , 1
                     ) ;
 
+                    if( m_prop_vadj )
+                    {
+                        int h = event->height ;
+
+                        if( h >= ((m_row_height * (m_model->size()-1)-0.5) )) 
+                        {
+                            m_prop_vadj.get_value()->set_value( 0. ) ; 
+                        }
+                    }
+
                     int width = event->width - 32 ;
 
                     double column_width_calculated = (double(width) - double(m_fixed_total_width) - double(column_width_collapsed*double(m_collapsed.size()))) / (m_columns.size() - m_collapsed.size() - m_fixed.size()) ;
@@ -1963,6 +1973,14 @@ namespace Playlist
                 }
 
             public:
+
+                void
+                grab_focus_select_last_row()
+                {
+                    grab_focus() ;
+                    m_selection =  m_model->size() - 1 ;
+                    queue_draw() ;
+                }
 
                 void
                 cancel_search()

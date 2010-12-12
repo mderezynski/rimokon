@@ -112,6 +112,12 @@ namespace MPX
 
         boost::shared_ptr< ::MPXPD::IShell> p1 = services->get< ::MPXPD::IShell>("mpx-service-shell") ;
 
+        p1->signal_paused().connect(
+              sigc::mem_fun(
+                    *this
+                  , &CPPModLastFmScrobbler::on_paused_changed
+        )) ;
+
         GObject * obj = G_OBJECT(dynamic_cast<Gtk::Widget*>(p1.get())->gobj()) ;
 
         g_signal_connect(
@@ -134,16 +140,6 @@ namespace MPX
             , GCallback(on_controller_track_cancelled)
             , this 
         ) ;
-
-/*
-        boost::shared_ptr<IPlay> p2 = services->get<IPlay>("mpx-service-play") ;
-
-        p2->property_status().signal_changed().connect(
-                sigc::mem_fun(
-                      *this
-                    , &CPPModLastFmScrobbler::on_play_status_changed
-        )) ;
-*/
 
         show_all() ;
     }
@@ -183,6 +179,12 @@ namespace MPX
     }
 
     void
+    CPPModLastFmScrobbler::on_paused_changed( bool paused )
+    {
+        m_LastFmScrobbler->pausePlaying( paused ) ;
+    }
+
+    void
     CPPModLastFmScrobbler::on_controller_track_out(
           GObject *     controller
         , gpointer      data
@@ -196,7 +198,7 @@ namespace MPX
         boost::shared_ptr< ::MPXPD::IShell> p = services->get< ::MPXPD::IShell>("mpx-service-shell") ;
 
         try{
-            obj.m_LastFmScrobbler->finishedPlaying() ;
+            obj.m_LastFmScrobbler->finishedPlaying( p->get_elapsed() ) ;
         } catch( std::runtime_error )
         {
         }
@@ -214,15 +216,6 @@ namespace MPX
             return ;
 
         boost::shared_ptr< ::MPXPD::IShell> p = services->get< ::MPXPD::IShell>("mpx-service-shell") ;
-
-        try{
-            if( obj.m_LastFmScrobbler->m_CurrentTrackInfo )
-            {
-                obj.m_LastFmScrobbler->finishedPlaying() ;
-            }
-        } catch( std::runtime_error )
-        {
-        }
 
         try{
             const MPXPD::Metadata& m = p->get_metadata() ; 
@@ -256,31 +249,14 @@ namespace MPX
         if( !obj.m_Active )
             return ;
 
+        boost::shared_ptr< ::MPXPD::IShell> p = services->get< ::MPXPD::IShell>("mpx-service-shell") ;
+
         try{
-            obj.m_LastFmScrobbler->finishedPlaying() ;
+            obj.m_LastFmScrobbler->finishedPlaying( p->get_elapsed() ) ;
         } catch( std::runtime_error )
         {
         }
     }
-
-/*
-    void
-    CPPModLastFmScrobbler::on_play_status_changed(
-    )
-    {
-        boost::shared_ptr<IPlay> p = services->get<IPlay>("mpx-service-play") ;
-
-        if( p->property_status().get_value() == PLAYSTATUS_PAUSED )
-        {
-            m_LastFmScrobbler->pausePlaying( true ) ;
-        }
-        else
-        if( p->property_status().get_value() == PLAYSTATUS_PLAYING )
-        {
-            m_LastFmScrobbler->pausePlaying( false ) ;
-        }
-    }
-*/
 
     void
     CPPModLastFmScrobbler::on_entry_changed(

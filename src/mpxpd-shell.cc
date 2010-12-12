@@ -50,6 +50,7 @@ namespace MPXPD
             , sql( sql_ )
             , mpd( mpd_ )
             , xml( xml_ )
+            , m_elapsed( 0 )
             {
                m_C_SIG_ID_track_new =
                     g_signal_new(
@@ -103,17 +104,20 @@ namespace MPXPD
                 sw_artists->add(*artists_view) ;
 
                 m_conn_artists = artists_view->signal_new_artist_selected().connect(
-                    sigc::mem_fun(*this, &Shell::on_artist_changed)
-                ) ;
+                    sigc::mem_fun(        *this
+                                        , &Shell::on_artist_changed
+                )) ;
 
                 albums_view = new AlbumsView ;
                 sw_albums = dynamic_cast<Gtk::ScrolledWindow*>(xml->get_widget("sw-albums")); 
                 sw_albums->add(*albums_view) ;    
-                albums_view->signal_new_album_selected().connect(
-                    sigc::mem_fun(*this, &Shell::on_album_changed)
-                ) ;
-                albums_view->signal_album_chosen().connect(
 
+                albums_view->signal_new_album_selected().connect(
+                    sigc::mem_fun(        *this
+                                        , &Shell::on_album_changed
+                )) ;
+
+                albums_view->signal_album_chosen().connect(
                         sigc::mem_fun(    *this
                                         , &Shell::on_browse_album_chosen
                 )) ;
@@ -541,10 +545,12 @@ namespace MPXPD
                 {
                     case MPD_PLAYER_PAUSE:
                     {  
+                        _update_gui() ;
+
                         i_play->set( Gtk::Stock::MEDIA_PLAY, Gtk::ICON_SIZE_BUTTON ) ;
                         b_stop->set_sensitive() ;
 
-                        _update_gui() ;
+                        m_CPP_SIG_paused.emit( true ) ;
 
                         break ;
                     }
@@ -555,13 +561,23 @@ namespace MPXPD
                         b_play->set_sensitive() ;
                         b_stop->set_sensitive() ;
 
-                        on_server_next_song() ;
+                        if( mpd.get_state() == 2 )
+                        {
+                            on_server_next_song() ;
+                        }
+
+                        if( mpd.get_state() == 0 )
+                        {
+                            m_CPP_SIG_paused.emit( false ) ;
+                        }
 
                         break ;
                     }
 
                     case MPD_PLAYER_STOP:
                     {
+                        _update_gui() ;
+
                         i_play->set( Gtk::Stock::MEDIA_PLAY, Gtk::ICON_SIZE_BUTTON ) ;
 
                         b_stop->set_sensitive( false ) ;
@@ -574,8 +590,6 @@ namespace MPXPD
 
                         m_current_metadata = MPXPD::Metadata() ;
                         m_current_metadata.is_set = false ;
-
-                        _update_gui() ;
 
                         g_signal_emit(
                               G_OBJECT(gobj())
@@ -825,6 +839,12 @@ namespace MPXPD
             void
             Shell::on_server_next_song()
             {
+                g_signal_emit(
+                    G_OBJECT(gobj())
+                  , m_C_SIG_ID_track_out
+                  , 0
+                ) ;
+
                 _update_metadata() ;
 
                 g_signal_emit(
@@ -839,6 +859,7 @@ namespace MPXPD
             void
             Shell::on_server_song_metrics( int pos, int dur )
             {
+                m_elapsed = pos ;
                 m_position->set_position( dur, pos ) ;
             }
 
@@ -977,7 +998,6 @@ namespace MPXPD
                     }
 
                     while (gtk_events_pending()) gtk_main_iteration() ;
-
                 }
 
                 albums_view->end_add() ;
@@ -1024,10 +1044,10 @@ namespace MPXPD
                 }
 
 
-                Gtk::TreePath path ("0") ;
-
                 titles_view->autosize() ;
-                titles_view->scroll_to_row( path ) ;
+                titles_view->scroll_to_row( Gtk::TreePath("0")) ;
+                titles_view->set_search_column( 1 ) ;
+                titles_view->set_enable_search() ;
             }
 
             void
@@ -1050,7 +1070,7 @@ namespace MPXPD
                 MPX::Track& t = *(track.get()) ;
                 std::string uri = boost::get<std::string>(t[ATTRIBUTE_LOCATION].get()) ;
                 mpd.add_song( uri ) ;
-                tracklist_view->clear_selection() ;
+                playlist_view->grab_focus_select_last_row() ;
             }
 
             void
@@ -1059,6 +1079,9 @@ namespace MPXPD
             )
             {
                 mpd.add_song( uri ) ;
+                while (gtk_events_pending()) gtk_main_iteration() ;
+                playlist_view->grab_focus_select_last_row() ;
+
             }
 
             void

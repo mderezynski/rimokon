@@ -258,6 +258,12 @@ namespace MPXPD
                 return m_current_metadata ;
             }
 
+            virtual int
+            get_elapsed()
+            {
+                return m_elapsed ;
+            }
+
     private:
 
             void
@@ -298,6 +304,8 @@ namespace MPXPD
             MPX::Covers                       * covers ;
 
             Glib::RefPtr<Gnome::Glade::Xml>     xml ;
+
+            int                                 m_elapsed ;
 
         public:
 

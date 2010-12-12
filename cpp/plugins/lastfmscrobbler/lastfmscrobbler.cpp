@@ -50,15 +50,6 @@ LastFmScrobbler::LastFmScrobbler(bool synchronous, ILog & log )
 , m_CommitOnly(false)
 , m_Log(log)
 {
-/*
-    boost::shared_ptr<MPX::IPlay> p = MPX::services->get<MPX::IPlay>("mpx-service-play") ;
-
-    p->signal_seek().connect(
-        sigc::mem_fun(
-              *this
-            , &LastFmScrobbler::on_play_seek
-    )) ;
-*/
 }
 
 LastFmScrobbler::~LastFmScrobbler()
@@ -119,19 +110,20 @@ void LastFmScrobbler::pausePlaying(bool paused)
 {
 }
 
-void LastFmScrobbler::finishedPlaying()
+void LastFmScrobbler::finishedPlaying( int elapsed )
 {
     if( !m_CurrentTrackInfo )
         return ;
 
-    m_Elapsed = m_CurrentTrackInfo.get().getTrackLength() ; 
+    m_Elapsed = elapsed ;
     m_SeekDiff = 0 ;
 
     authenticateIfNecessary();
 
-    if (m_Synchronous)
+    if( m_Synchronous )
     {
         submitTrack(m_CurrentTrackInfo.get());
+        m_CurrentTrackInfo.reset() ;
     }
     else
     {
