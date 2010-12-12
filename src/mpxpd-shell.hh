@@ -306,6 +306,7 @@ namespace MPXPD
             Glib::RefPtr<Gnome::Glade::Xml>     xml ;
 
             int                                 m_elapsed ;
+            int                                 m_old_state ;
 
         public:
 

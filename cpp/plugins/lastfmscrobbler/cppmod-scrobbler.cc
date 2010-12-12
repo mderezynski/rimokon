@@ -63,9 +63,9 @@ namespace MPX
         , PluginHolderBase()
     {
         m_Name = "Last.fm Scrobbler" ;
-        m_Description = "This plugin allows you to scrobbler tracks to Last.fm" ;
+        m_Description = "This plugin enables Rimokon to scrobble tracks to Last.fm" ;
         m_Authors = "Dirk Vanden Boer, M. Derezynski" ;
-        m_Copyright = "(C) Dirk Vanden Boer, (C) 2009 MPX Project" ;
+        m_Copyright = "(C) Dirk Vanden Boer, (C) 2010 MPX Project" ;
         m_IAge = 0 ;
         m_Website = "http://redmine.sivashs.org/wiki/mpx" ;
         m_Active = false ;

@@ -87,9 +87,9 @@ namespace MPX
         show() ;
 
         m_Name = "Multimedia Keys" ;
-        m_Description = "This plugin allows Youki to be controlled using the keyboard's multimedia keys" ;
-        m_Authors = "Rhythmbox developers (original code), M. Derezynski (adaptation for Youki)" ;
-        m_Copyright = "(C) 2009 MPX Project" ;
+        m_Description = "This plugin enables Rimokon to be controlled using the keyboard's multimedia keys" ;
+        m_Authors = "Rhythmbox developers, Audacious developers (parts of original code), M. Derezynski (adaptation for Rimokon)" ;
+        m_Copyright = "(C) 2010 MPX Project" ;
         m_IAge = 0 ;
         m_Website = "http://redmine.sivashs.org/projects/mpx" ;
         m_Active = false ;

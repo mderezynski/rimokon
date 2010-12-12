@@ -361,8 +361,8 @@ namespace MPXPD
 
                 mpd.connect() ;
 
+                m_old_state = mpd.get_state() ;
                 on_server_state( mpd.get_state() ) ;
-                on_server_next_song() ;
 
                 resize(
                     mcs->key_get<int>("mpx","window-w"),
@@ -545,16 +545,19 @@ namespace MPXPD
                   int state
             )
             {
+                _update_gui() ;
+
                 switch( state )
                 {
                     case MPD_PLAYER_PAUSE:
                     {  
-                        _update_gui() ;
-
                         i_play->set( Gtk::Stock::MEDIA_PLAY, Gtk::ICON_SIZE_BUTTON ) ;
                         b_stop->set_sensitive() ;
 
-                        m_CPP_SIG_paused.emit( true ) ;
+                        if( m_old_state == MPD_PLAYER_PLAY )
+                        {
+                            m_CPP_SIG_paused.emit( true ) ;
+                        }
 
                         break ;
                     }
@@ -565,12 +568,18 @@ namespace MPXPD
                         b_play->set_sensitive() ;
                         b_stop->set_sensitive() ;
 
-                        if( mpd.get_state() == 2 )
+                        if( m_old_state == MPD_PLAYER_STOP )
                         {
-                            on_server_next_song() ;
-                        }
+                            _update_metadata() ;
 
-                        if( mpd.get_state() == 0 )
+                            g_signal_emit(
+                                G_OBJECT(gobj())
+                              , m_C_SIG_ID_track_new
+                              , 0
+                            ) ;
+                        }
+                        else
+                        if( m_old_state == MPD_PLAYER_PAUSE )
                         {
                             m_CPP_SIG_paused.emit( false ) ;
                         }
@@ -580,8 +589,6 @@ namespace MPXPD
 
                     case MPD_PLAYER_STOP:
                     {
-                        _update_gui() ;
-
                         i_play->set( Gtk::Stock::MEDIA_PLAY, Gtk::ICON_SIZE_BUTTON ) ;
 
                         b_stop->set_sensitive( false ) ;
@@ -606,7 +613,9 @@ namespace MPXPD
 
                     default:
                         break;
-                } ;
+                }
+
+                m_old_state = state ;
             }
 
             void
@@ -843,11 +852,14 @@ namespace MPXPD
             void
             Shell::on_server_next_song()
             {
-                g_signal_emit(
-                    G_OBJECT(gobj())
-                  , m_C_SIG_ID_track_out
-                  , 0
-                ) ;
+                if( m_old_state == MPD_PLAYER_PLAY )
+                {
+                    g_signal_emit(
+                        G_OBJECT(gobj())
+                      , m_C_SIG_ID_track_out
+                      , 0
+                    ) ;
+                }
 
                 _update_metadata() ;
 
