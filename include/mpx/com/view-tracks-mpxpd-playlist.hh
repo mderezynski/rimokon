@@ -55,7 +55,7 @@ namespace Playlist
 
         typedef std::vector<Row_t>                  Model_t ;
         typedef boost::shared_ptr<Model_t>          Model_sp_t ;
-        typedef sigc::signal<void>                  Signal1 ;
+        typedef sigc::signal<void, bool>            Signal1 ;
 
         struct Model_t_iterator_equal
             : std::binary_function<Model_t::iterator, Model_t::iterator, bool>
@@ -168,7 +168,7 @@ namespace Playlist
                 clear()
                 {
                     m_realmodel->clear () ;
-                    m_changed.emit() ;
+                    m_changed.emit(true) ;
                 } 
 
                 virtual Signal1&
@@ -199,7 +199,7 @@ namespace Playlist
                 swap( std::size_t p1, std::size_t p2 )
                 {
                     std::swap( (*m_realmodel)[p1], (*m_realmodel)[p2] ) ;
-                    m_changed.emit() ;
+                    m_changed.emit(false) ;
                 }
 
                 virtual void
@@ -209,7 +209,7 @@ namespace Playlist
                 )
                 {
                     m_realmodel->erase( iter1, iter2 ) ;
-                    m_changed.emit() ;
+                    m_changed.emit(true) ;
                 }
 
                 virtual void
@@ -247,7 +247,7 @@ namespace Playlist
                     ) ;
 
                     m_realmodel->push_back(row) ;
-                    m_changed.emit() ;
+                    m_changed.emit(false) ;
                 }
 
                 virtual void
@@ -286,7 +286,7 @@ namespace Playlist
                     ) ;
 
                     *iter = row ;
-                    m_changed.emit() ;
+                    m_changed.emit(false) ;
                 }
 
                 void
@@ -1065,9 +1065,26 @@ namespace Playlist
                 {
                     if( m_prop_vadj.get_value() )
                     {
-                        m_prop_vadj.get_value()->set_upper( upper ) ; 
-                        m_prop_vadj.get_value()->set_page_size( page_size ) ; 
-                        m_prop_vadj.get_value()->set_step_increment( step_increment ) ; 
+                        if( upper )
+                        {
+                            m_prop_vadj.get_value()->set_upper( upper ) ; 
+                            m_prop_vadj.get_value()->set_page_size( page_size ) ; 
+                            m_prop_vadj.get_value()->set_step_increment( step_increment ) ; 
+    
+                            int val = m_prop_vadj.get_value()->get_value() ;
+
+                            if( val > (upper-page_size))
+                            {
+                                m_prop_vadj.get_value()->set_value( upper - page_size ) ;
+                            }
+                        }
+                        else
+                        {
+                            m_prop_vadj.get_value()->set_upper( 0 ) ; 
+                            m_prop_vadj.get_value()->set_page_size( 0 ) ; 
+                            m_prop_vadj.get_value()->set_step_increment( 0 ) ; 
+                            m_prop_vadj.get_value()->set_value( 0 ) ; 
+                        }
                     }
                 }
 
@@ -1462,6 +1479,7 @@ namespace Playlist
 
                 void
                 on_model_changed(
+                      bool  erased
                 )
                 {
                     m_Model_I = Interval<std::size_t> (
@@ -1476,29 +1494,33 @@ namespace Playlist
                         , 1
                     ) ;
 
-                    if( m_prop_vadj )
+                    if( m_prop_vadj && is_realized() && is_visible() )
                     {
-                        const Gtk::Allocation& a = get_allocation();
-
-                        if( !m_model->size() )
+                        if( !erased )
                         {
-                            m_prop_vadj.get_value()->set_value( 0. ) ; 
+                            const Gtk::Allocation& a = get_allocation();
+
+                            if((m_row_height > 0) && (a.get_height() > 0))
+                            {
+                                int rows_visible = a.get_height() / int(m_row_height) ;
+                                int model_size   = m_model->size() ;
+
+                                if( model_size >= rows_visible ) 
+                                {
+                                    m_prop_vadj.get_value()->set_value( m_prop_vadj.get_value()->get_upper() - m_prop_vadj.get_value()->get_page_size() ) ;
+                                }
+                            }
                         }
                         else
-                        if( is_realized() && is_visible() && (m_row_height > 0) && (a.get_height() > 0))
                         {
-                            int rows_visible = a.get_height() / int(m_row_height) ;
-                            int model_size   = m_model->size() ;
-
-                            if( model_size >= rows_visible ) 
+                            if( !m_model->size() )
                             {
-                                m_prop_vadj.get_value()->set_value( m_prop_vadj.get_value()->get_upper() - m_prop_vadj.get_value()->get_page_size() ) ;
+                                m_prop_vadj.get_value()->set_value( 0. ) ; 
                             }
                         }
                     }
 
                     m_selection.reset() ;
-
                     update_actions() ;
                     queue_draw() ;
                 }
@@ -1624,7 +1646,7 @@ namespace Playlist
                             &Class::on_model_changed
                     ));
 
-                    on_model_changed() ;
+                    on_model_changed(false) ;
                 }
 
                 void
