@@ -307,6 +307,7 @@ namespace MPXPD
 
             int                                 m_elapsed ;
             int                                 m_old_state ;
+            bool                                m_new_emitted ;
 
         public:
 

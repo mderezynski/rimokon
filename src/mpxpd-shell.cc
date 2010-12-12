@@ -571,16 +571,14 @@ namespace MPXPD
                         {
                             m_CPP_SIG_paused.emit( false ) ;
                         }
-                        else
-                        if( m_old_state == MPD_PLAYER_STOP )
+                        else if( m_old_state == MPD_PLAYER_STOP )
                         {
-                            _update_metadata() ;
+                            m_new_emitted = false ;
 
-                            g_signal_emit(
-                                G_OBJECT(gobj())
-                              , m_C_SIG_ID_track_new
-                              , 0
-                            ) ;
+                            m_current_metadata = MPXPD::Metadata() ;
+                            m_current_metadata.is_set = false ;
+
+                            on_server_next_song() ;
                         }
 
                         break ;
@@ -588,6 +586,8 @@ namespace MPXPD
 
                     case MPD_PLAYER_STOP:
                     {
+                        m_new_emitted = false ;
+
                         i_play->set( Gtk::Stock::MEDIA_PLAY, Gtk::ICON_SIZE_BUTTON ) ;
 
                         b_stop->set_sensitive( false ) ;
@@ -709,7 +709,7 @@ namespace MPXPD
             void
             Shell::on_server_playlist_changed()
             {
-                _update_metadata() ;
+                //_update_metadata() ;
                 _update_gui() ;
             }
 
@@ -851,24 +851,28 @@ namespace MPXPD
             void
             Shell::on_server_next_song()
             {
-                if( m_old_state == MPD_PLAYER_PLAY )
+                if( m_current_metadata.is_set )
                 {
                     g_signal_emit(
                         G_OBJECT(gobj())
                       , m_C_SIG_ID_track_out
                       , 0
                     ) ;
+
+                    m_new_emitted = false ;
                 }
 
-                if( mpd.get_state() == MPD_PLAYER_PLAY )
-                {
-                    _update_metadata() ;
+                _update_metadata() ;
 
+                if( !m_new_emitted )
+                {
                     g_signal_emit(
                         G_OBJECT(gobj())
                       , m_C_SIG_ID_track_new
                       , 0
                     ) ;
+    
+                    m_new_emitted = true ;
                 }
 
                 _update_gui() ;
