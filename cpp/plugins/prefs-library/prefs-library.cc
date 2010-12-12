@@ -94,12 +94,15 @@ namespace MPX
             , "music-import-path"
             );
 
+/*
         mcs_bind->bind_filechooser(
             *dynamic_cast<Gtk::FileChooser*>( m_Xml->get_widget( "fc-quarantine-path" ))
             , "mpx"
             , "music-quarantine-path"
             );
+*/
 
+/*
         Glib::RefPtr<Gio::File> quarantine_path = Gio::File::create_for_path( mcs->key_get<std::string>("mpx","music-quarantine-path")) ;
     
         try{
@@ -108,15 +111,15 @@ namespace MPX
         {
             g_message( "Error creating quarantine path: %s", cxe.what().c_str() ) ;
         }
-
+*/
 
         m_Xml->get_widget( "rescan-at-startup", m_Library_RescanAtStartup ) ;
         m_Xml->get_widget( "rescan-in-intervals", m_Library_RescanInIntervals) ;
         m_Xml->get_widget( "rescan-interval", m_Library_RescanInterval ) ;
-        m_Xml->get_widget( "quarantine-files", m_Library_QuarantineInvalid ) ;
+//        m_Xml->get_widget( "quarantine-files", m_Library_QuarantineInvalid ) ;
 
         m_Xml->get_widget( "hbox-rescan-interval", m_Library_RescanIntervalBox ) ;
-        m_Xml->get_widget( "hbox-quarantine", m_Library_QuarantineBox ) ;
+//        m_Xml->get_widget( "hbox-quarantine", m_Library_QuarantineBox ) ;
 
         mcs_bind->bind_spin_button(
             *m_Library_RescanInterval

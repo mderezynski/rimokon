@@ -360,7 +360,7 @@ namespace AQE
                 }
             }
             else
-            if( *i == '"' || *i == '\'')
+            if( *i == '"' ) 
             {
                 have_quot = true ;
 

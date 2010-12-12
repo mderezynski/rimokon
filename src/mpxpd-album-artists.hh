@@ -50,6 +50,8 @@ namespace MPXPD
                 get_selection()->set_mode( Gtk::SELECTION_BROWSE ) ;
 
                 set_rules_hint() ;
+
+                set_enable_search( false ) ;
             }
 
 

@@ -396,6 +396,8 @@ namespace Playlist
                 {
                     using boost::get;
 
+                    cairo->save() ;
+
                     cairo->rectangle(
                           xpos + 5
                         , ypos + 6
@@ -443,6 +445,8 @@ namespace Playlist
                     ) ;
 
                     cairo->reset_clip() ;
+
+                    cairo->restore() ;
                 }
 
                 void
@@ -459,6 +463,8 @@ namespace Playlist
                 )
                 {
                     using boost::get ;
+
+                    cairo->save() ;
 
                     cairo->set_operator(Cairo::OPERATOR_OVER) ;
 
@@ -535,6 +541,8 @@ namespace Playlist
                     }
 
                     cairo->reset_clip();
+
+                    cairo->restore() ;
                   }
         };
 
@@ -595,9 +603,11 @@ namespace Playlist
 
                 typedef sigc::signal<void>          SignalClear ;
                 typedef sigc::signal<void,int>      SignalDelPos ;
+                typedef sigc::signal<void>          SignalLeft ;
 
                 SignalClear     _signal_0 ; 
                 SignalDelPos    _signal_1 ; 
+                SignalLeft      _signal_2 ;
 
                 SignalTrackActivated                m_SIGNAL_track_activated ;
                 SignalVAdjChanged                   m_SIGNAL_vadj_changed ;
@@ -709,18 +719,11 @@ namespace Playlist
 
                     switch( event->keyval )
                     {
-/*
-                        case GDK_Delete:
+                        case GDK_KEY_Left:
                         {
-                            if( m_selection )
-                            {
-                                std::size_t p = origin ;
-                                m_selection.reset() ;
-                                m_model->erase( p ) ;
-                            }
-                            return true ;
+                            _signal_2.emit() ;
+                            break ;
                         }
-*/
 
                         case GDK_Return:
                         case GDK_KP_Enter:
@@ -1083,16 +1086,6 @@ namespace Playlist
                         , 1
                     ) ;
 
-                    if( m_prop_vadj )
-                    {
-                        int h = event->height ;
-
-                        if( h >= ((m_row_height * (m_model->size()-1)-0.5) )) 
-                        {
-                            m_prop_vadj.get_value()->set_value( 0. ) ; 
-                        }
-                    }
-
                     int width = event->width - 32 ;
 
                     double column_width_calculated = (double(width) - double(m_fixed_total_width) - double(column_width_collapsed*double(m_collapsed.size()))) / (m_columns.size() - m_collapsed.size() - m_fixed.size()) ;
@@ -1151,12 +1144,10 @@ namespace Playlist
                           0
                         , 0
                         , a.get_width()
-                        , a.get_height()
+                        , a.get_height() 
                     ) ;
     
                     cairo->clip() ;
-
-                    cairo->set_operator( Cairo::OPERATOR_OVER ) ;
 
                     std::size_t row = get_upper_row() ;
                     std::size_t idx = 0 ;
@@ -1189,17 +1180,23 @@ namespace Playlist
                             }
                     }
 
-/*
-                    if( m_model->size() == 0 )
-                        return true ;
-*/
-
-                    cairo->set_operator(Cairo::OPERATOR_OVER);
+                    cairo->set_operator( Cairo::OPERATOR_OVER ) ;
 
                     //// ROWS
 
                     if( event->area.width > 32 )
                     {
+                            cairo->save() ;
+
+                            cairo->rectangle(
+                                  0
+                                , 0
+                                , a.get_width()
+                                , (int(a.get_height())/m_row_height) * m_row_height
+                            ) ;
+            
+                            cairo->clip() ;
+
                             while( m_model->is_set() && cnt && m_Model_I.in( row ) ) 
                             {
                                 if( !(idx % 2) ) 
@@ -1331,6 +1328,8 @@ namespace Playlist
                                 row  ++ ;
                                 cnt  -- ;
                             }
+
+                            cairo->restore() ;
 
                             if( true /*m_render_dashes*/)
                             {
@@ -1479,22 +1478,22 @@ namespace Playlist
 
                     if( m_prop_vadj )
                     {
+                        const Gtk::Allocation& a = get_allocation();
 
                         if( !m_model->size() )
                         {
                             m_prop_vadj.get_value()->set_value( 0. ) ; 
                         }
-
-                        if( (m_prop_vadj.get_value()->get_value() - m_prop_vadj.get_value()->get_page_size()) > m_prop_vadj.get_value()->get_upper())
+                        else
+                        if( is_realized() && is_visible() && (m_row_height > 0) && (a.get_height() > 0))
                         {
-                            m_prop_vadj.get_value()->set_value( m_prop_vadj.get_value()->get_value() + 1 ) ;
-                        }
+                            int rows_visible = a.get_height() / int(m_row_height) ;
+                            int model_size   = m_model->size() ;
 
-                        const Gtk::Allocation& a = get_allocation();
-
-                        if( m_model->size() > (a.get_height()/double(m_row_height)) ) 
-                        {
-                            m_prop_vadj.get_value()->set_value( m_prop_vadj.get_value()->get_upper() - m_prop_vadj.get_value()->get_page_size() ) ;
+                            if( model_size > rows_visible ) 
+                            {
+                                m_prop_vadj.get_value()->set_value( m_prop_vadj.get_value()->get_upper() - m_prop_vadj.get_value()->get_page_size() ) ;
+                            }
                         }
                     }
 
@@ -1977,6 +1976,7 @@ namespace Playlist
                 void
                 grab_focus_select_last_row()
                 {
+                    while (gtk_events_pending()) gtk_main_iteration() ;
                     grab_focus() ;
                     m_selection =  m_model->size() - 1 ;
                     queue_draw() ;
@@ -2021,7 +2021,13 @@ namespace Playlist
                     return _signal_1 ;
                 }
 
-                Class ( Glib::RefPtr<Gtk::UIManager> ui_man )
+                SignalLeft&
+                signal_left()
+                {
+                    return _signal_2 ;
+                }
+
+                Class( Glib::RefPtr<Gtk::UIManager> ui_man )
 
                         : ObjectBase( "YoukiClassPlaylist" )
                         , m_prop_vadj( *this, "vadjustment", (Gtk::Adjustment*)( 0 ))

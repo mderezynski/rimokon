@@ -232,6 +232,10 @@ namespace MPXPD
                         sigc::mem_fun( *this, &Shell::on_playlist_clear )
                 ) ;
 
+                playlist_view->signal_left().connect(
+                        sigc::mem_fun( *tracklist_view, &Gtk::Widget::grab_focus )
+                ) ;
+
                 mpd.give_model( m ) ;
             }
 
@@ -404,7 +408,7 @@ namespace MPXPD
 
                 tracklist_model->set_sizes( max_artist, max_albums ) ;
 
-                sql_rows_t  rows ;
+                sql_rows_t rows ;
                 sql.sql_get("SELECT * FROM track_view;", rows ) ;
                 for(sql_rows_t::iterator i = rows.begin(); i != rows.end(); ++i )
                 {

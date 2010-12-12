@@ -1268,6 +1268,8 @@ namespace Tracks
                 {
                     using boost::get;
 
+                    cairo->save() ;
+
                     cairo->rectangle(
                           xpos + 5
                         , ypos + 6
@@ -1315,6 +1317,8 @@ namespace Tracks
                     ) ;
 
                     cairo->reset_clip() ;
+
+                    cairo->restore() ;
                 }
 
                 void
@@ -1331,6 +1335,8 @@ namespace Tracks
                 )
                 {
                     using boost::get ;
+
+                    cairo->save() ;
 
                     cairo->set_operator(Cairo::OPERATOR_OVER) ;
 
@@ -1407,6 +1413,8 @@ namespace Tracks
                     }
 
                     cairo->reset_clip();
+
+                    cairo->restore() ;
                   }
         };
 
@@ -2046,7 +2054,7 @@ namespace Tracks
                           0
                         , 0
                         , a.get_width()
-                        , a.get_height()
+                        , a.get_height() 
                     ) ;
     
                     cairo->clip() ;
@@ -2084,15 +2092,23 @@ namespace Tracks
                             }
                     }
 
-                    if( m_model->size() == 0 )
-                        return true ;
-
-                    cairo->set_operator(Cairo::OPERATOR_OVER);
+                    cairo->set_operator( Cairo::OPERATOR_OVER ) ;
 
                     //// ROWS
 
                     if( event->area.width > 32 )
                     {
+                            cairo->save() ;
+
+                            cairo->rectangle(
+                                  0
+                                , 0
+                                , a.get_width()
+                                , (int(a.get_height())/m_row_height) * m_row_height
+                            ) ;
+            
+                            cairo->clip() ;
+
                             while( m_model->is_set() && cnt && m_Model_I.in( row ) ) 
                             {
                                 if( !(idx % 2) ) 
@@ -2225,6 +2241,8 @@ namespace Tracks
                                 cnt  -- ;
                             }
 
+                            cairo->restore() ;
+    
                             if( true /*m_render_dashes*/)
                             {
                                 std::valarray<double> dashes ( 3 ) ;
