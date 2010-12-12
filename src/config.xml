@@ -48,16 +48,16 @@
     <key id="preferences-notebook-page" type="integer">0</key>
     <key id="theme" type="string">popularfruit</key>
     <key id="volume" type="integer">50</key>
-    <key id="window-h" type="integer">547</key>
+    <key id="window-h" type="integer">500</key>
     <key id="window-plugins-h" type="integer">447</key>
     <key id="window-plugins-w" type="integer">708</key>
-    <key id="window-plugins-x" type="integer">248</key>
-    <key id="window-plugins-y" type="integer">57</key>
+    <key id="window-plugins-x" type="integer">157</key>
+    <key id="window-plugins-y" type="integer">100</key>
     <key id="window-prefs-h" type="integer">431</key>
     <key id="window-prefs-w" type="integer">700</key>
     <key id="window-prefs-x" type="integer">286</key>
     <key id="window-prefs-y" type="integer">126</key>
-    <key id="window-w" type="integer">1024</key>
+    <key id="window-w" type="integer">729</key>
     <key id="window-x" type="integer">405</key>
     <key id="window-y" type="integer">25</key>
   </domain>

@@ -362,7 +362,6 @@ namespace MPXPD
                 mpd.connect() ;
 
                 m_old_state = mpd.get_state() ;
-                on_server_state( mpd.get_state() ) ;
 
                 resize(
                     mcs->key_get<int>("mpx","window-w"),
@@ -571,6 +570,17 @@ namespace MPXPD
                         if( m_old_state == MPD_PLAYER_PAUSE )
                         {
                             m_CPP_SIG_paused.emit( false ) ;
+                        }
+                        else
+                        if( m_old_state == MPD_PLAYER_STOP )
+                        {
+                            _update_metadata() ;
+
+                            g_signal_emit(
+                                G_OBJECT(gobj())
+                              , m_C_SIG_ID_track_new
+                              , 0
+                            ) ;
                         }
 
                         break ;
@@ -850,13 +860,16 @@ namespace MPXPD
                     ) ;
                 }
 
-                _update_metadata() ;
+                if( mpd.get_state() == MPD_PLAYER_PLAY )
+                {
+                    _update_metadata() ;
 
-                g_signal_emit(
-                    G_OBJECT(gobj())
-                  , m_C_SIG_ID_track_new
-                  , 0
-                ) ;
+                    g_signal_emit(
+                        G_OBJECT(gobj())
+                      , m_C_SIG_ID_track_new
+                      , 0
+                    ) ;
+                }
 
                 _update_gui() ;
             }
