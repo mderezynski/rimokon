@@ -1490,7 +1490,7 @@ namespace Playlist
                             int rows_visible = a.get_height() / int(m_row_height) ;
                             int model_size   = m_model->size() ;
 
-                            if( model_size > rows_visible ) 
+                            if( model_size >= rows_visible ) 
                             {
                                 m_prop_vadj.get_value()->set_value( m_prop_vadj.get_value()->get_upper() - m_prop_vadj.get_value()->get_page_size() ) ;
                             }
