@@ -568,17 +568,6 @@ namespace MPXPD
                         b_play->set_sensitive() ;
                         b_stop->set_sensitive() ;
 
-                        if( m_old_state == MPD_PLAYER_STOP )
-                        {
-                            _update_metadata() ;
-
-                            g_signal_emit(
-                                G_OBJECT(gobj())
-                              , m_C_SIG_ID_track_new
-                              , 0
-                            ) ;
-                        }
-                        else
                         if( m_old_state == MPD_PLAYER_PAUSE )
                         {
                             m_CPP_SIG_paused.emit( false ) ;
