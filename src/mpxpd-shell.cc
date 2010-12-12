@@ -615,7 +615,7 @@ namespace MPXPD
                         break;
                 }
 
-                m_old_state = state ;
+                m_old_state = mpd.get_state() ;
             }
 
             void

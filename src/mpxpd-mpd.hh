@@ -208,7 +208,7 @@ namespace MPXPD
             int
             get_state()
             {
-                return m_state ;
+                return mpd_player_get_state( obj ) ;
             }
 
             int
