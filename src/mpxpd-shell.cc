@@ -50,8 +50,10 @@ namespace MPXPD
             , sql( sql_ )
             , mpd( mpd_ )
             , xml( xml_ )
-            , m_elapsed( 0 )
             {
+               m_current_metadata = MPXPD::Metadata() ;
+               m_current_metadata.is_set = false ;
+
                m_C_SIG_ID_track_new =
                     g_signal_new(
                           "track-new"
@@ -544,8 +546,14 @@ namespace MPXPD
                   int state
             )
             {
-                _update_gui() ;
+                Glib::signal_idle().connect_once( sigc::bind( sigc::mem_fun( *this, &Shell::on_server_state_idle), state ) ) ;                
+            }
 
+            void
+            Shell::on_server_state_idle(
+                  int state
+            )
+            {
                 switch( state )
                 {
                     case MPD_PLAYER_PAUSE:
@@ -563,6 +571,8 @@ namespace MPXPD
 
                     case MPD_PLAYER_PLAY:
                     {  
+                        // _update_metadata() ;
+
                         i_play->set( Gtk::Stock::MEDIA_PAUSE, Gtk::ICON_SIZE_BUTTON ) ;
                         b_play->set_sensitive() ;
                         b_stop->set_sensitive() ;
@@ -571,22 +581,14 @@ namespace MPXPD
                         {
                             m_CPP_SIG_paused.emit( false ) ;
                         }
-                        else if( m_old_state == MPD_PLAYER_STOP )
-                        {
-                            m_new_emitted = false ;
-
-                            m_current_metadata = MPXPD::Metadata() ;
-                            m_current_metadata.is_set = false ;
-
-                            on_server_next_song() ;
-                        }
 
                         break ;
                     }
 
                     case MPD_PLAYER_STOP:
                     {
-                        m_new_emitted = false ;
+                        m_current_metadata = MPXPD::Metadata() ;
+                        m_current_metadata.is_set = false ;
 
                         i_play->set( Gtk::Stock::MEDIA_PLAY, Gtk::ICON_SIZE_BUTTON ) ;
 
@@ -597,9 +599,6 @@ namespace MPXPD
 
                         playlist_view->clear_active_track() ;
                         m_position->set_position( 0, 0 ) ;
-
-                        m_current_metadata = MPXPD::Metadata() ;
-                        m_current_metadata.is_set = false ;
 
                         g_signal_emit(
                               G_OBJECT(gobj())
@@ -615,6 +614,7 @@ namespace MPXPD
                 }
 
                 m_old_state = mpd.get_state() ;
+                _update_gui() ;
             }
 
             void
@@ -849,30 +849,34 @@ namespace MPXPD
             }
 
             void
-            Shell::on_server_next_song()
+            Shell::on_server_next_song(
+            )
             {
-                if( m_current_metadata.is_set )
+                Glib::signal_idle().connect_once( sigc::mem_fun( *this, &Shell::on_server_next_song_idle)) ;
+            }
+
+
+            void
+            Shell::on_server_next_song_idle()
+            {
+                if( m_current_metadata.is_set ) 
                 {
                     g_signal_emit(
                         G_OBJECT(gobj())
                       , m_C_SIG_ID_track_out
                       , 0
                     ) ;
-
-                    m_new_emitted = false ;
                 }
 
                 _update_metadata() ;
 
-                if( !m_new_emitted )
+                if( m_current_metadata.is_set )
                 {
                     g_signal_emit(
                         G_OBJECT(gobj())
                       , m_C_SIG_ID_track_new
                       , 0
                     ) ;
-    
-                    m_new_emitted = true ;
                 }
 
                 _update_gui() ;
@@ -881,7 +885,6 @@ namespace MPXPD
             void
             Shell::on_server_song_metrics( int pos, int dur )
             {
-                m_elapsed = pos ;
                 m_position->set_position( dur, pos ) ;
             }
 

@@ -138,6 +138,9 @@ namespace MPXPD
             on_server_next_song(
             ) ;
 
+            void
+            on_server_next_song_idle(
+            ) ;
 
             void
             on_server_playlist_changed(
@@ -145,6 +148,11 @@ namespace MPXPD
 
             void
             on_server_state(
+                  int /*state*/
+            ) ;
+
+            void
+            on_server_state_idle(
                   int /*state*/
             ) ;
 
@@ -261,7 +269,12 @@ namespace MPXPD
             virtual int
             get_elapsed()
             {
-                return m_elapsed ;
+                if( m_current_metadata.is_set ) 
+                {
+                    return m_current_metadata.time ;
+                }
+                else
+                    return 0 ;
             }
 
     private:
@@ -305,9 +318,7 @@ namespace MPXPD
 
             Glib::RefPtr<Gnome::Glade::Xml>     xml ;
 
-            int                                 m_elapsed ;
             int                                 m_old_state ;
-            bool                                m_new_emitted ;
 
         public:
 

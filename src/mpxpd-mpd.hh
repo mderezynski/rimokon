@@ -208,7 +208,7 @@ namespace MPXPD
             int
             get_state()
             {
-                return mpd_player_get_state( obj ) ;
+                return m_state ; 
             }
 
             int
@@ -293,15 +293,15 @@ namespace MPXPD
                     mpd.signal_volume_s.emit( mpd_status_get_volume( mi )) ; 
                 }
 
+                if(what&MPD_CST_NEXTSONG)
+                {
+                    mpd.signal_next_song_s.emit() ; 
+                }
+
                 if(what&MPD_CST_STATE)
                 {
                     mpd.m_state = mpd_player_get_state( mi ) ;
                     mpd.signal_state_s.emit( mpd.m_state ) ; 
-                }
-
-                if(what&MPD_CST_NEXTSONG)
-                {
-                    mpd.signal_next_song_s.emit() ; 
                 }
 
                 if(what&MPD_CST_PLAYLIST)
